@@ -1,32 +1,68 @@
 import pygame
-
-from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+import sys
 from player import Player
+from asteroid import Asteroid
+from asteroidfield import AsteroidField
+from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 
-def main():
-    pygame.init()
+# Initialize Pygame
+pygame.init()
 
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+# Screen dimensions
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Asteroids Game")
 
-    clock = pygame.time.Clock()
-    dt = 0
+# Clock and delta time initialization
+clock = pygame.time.Clock()
+dt = 0
 
-    player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+# Create groups
+updatable = pygame.sprite.Group()
+drawable = pygame.sprite.Group()
+asteroids_group = pygame.sprite.Group()
 
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
+# Add the Player class to both groups
+Player.containers = (updatable, drawable)
+Asteroid.containers = (asteroids_group, updatable, drawable)
+AsteroidField.containers = (updatable)
 
-        player.update(dt)
-        screen.fill((0, 0, 0))
-        player.draw(screen)
-        pygame.display.flip()
-        dt = clock.tick(60) / 1000
+# Instantiate the player
+player = Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
 
-    print("Starting asteroids!")
-    print("Screen width: " f"{SCREEN_WIDTH}")
-    print ("Screen height: " f"{SCREEN_HEIGHT}")
+asteroids = [
+    Asteroid(100, 100, 30),
+    Asteroid(300, 200, 40),
+    Asteroid(500, 400, 50)
+]
 
-if __name__ == "__main__":
-    main()
+asteroid_field = AsteroidField(10, SCREEN_WIDTH, SCREEN_HEIGHT)
+
+for asteroid in asteroids:
+    asteroids_group.add(asteroid)
+    updatable.add(asteroid)
+    drawable.add(asteroid)
+
+# Game loop
+while True:
+    # Handle events (exit condition)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+    # Update all updatable objects
+    for obj in updatable:
+        obj.update(dt)
+
+    # Fill the screen with black
+    screen.fill((0, 0, 0))
+
+    # Manually draw all drawable objects
+    for obj in drawable:
+        obj.draw(screen)
+
+    # Refresh the screen
+    pygame.display.flip()
+
+    # Control the frame rate and calculate delta time
+    dt = clock.tick(60) / 1000  # Convert milliseconds to seconds
