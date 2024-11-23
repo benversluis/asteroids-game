@@ -50,16 +50,17 @@ while True:
             pygame.quit()
             sys.exit()
 
-    # Update all updatable objects
+    # Update and draw all updatable objects
+    screen.fill((0, 0, 0))  # Fill the screen with black
     for obj in updatable:
         obj.update(dt)
-
-    # Fill the screen with black
-    screen.fill((0, 0, 0))
-
-    # Manually draw all drawable objects
-    for obj in drawable:
         obj.draw(screen)
+
+    # Check for collisions between player and asteroids
+    if pygame.sprite.spritecollide(player, asteroids_group, False, pygame.sprite.collide_circle):
+        print("Game over!")
+        pygame.quit()
+        sys.exit()
 
     # Refresh the screen
     pygame.display.flip()
