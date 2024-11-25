@@ -5,8 +5,6 @@ from constants import *
 
 
 class AsteroidField(pygame.sprite.Sprite):
-    containers = ()
-    
     edges = [
         [
             pygame.Vector2(1, 0),
@@ -30,24 +28,14 @@ class AsteroidField(pygame.sprite.Sprite):
         ],
     ]
 
-    def __init__(self, num_asteroids, screen_width, screen_height):
+    def __init__(self):
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.spawn_timer = 0.0
-
-        for _ in range(num_asteroids):
-            x = random.randint(0, screen_width)
-            y = random.randint(0, screen_height)
-            radius = random.randint(10, 40)
-            Asteroid(x, y, radius)
 
     def spawn(self, radius, position, velocity):
         asteroid = Asteroid(position.x, position.y, radius)
         asteroid.velocity = velocity
 
-    def draw(self, screen):
-        # Implement logic to draw asteroid field if needed
-        pass
-    
     def update(self, dt):
         self.spawn_timer += dt
         if self.spawn_timer > ASTEROID_SPAWN_RATE:
